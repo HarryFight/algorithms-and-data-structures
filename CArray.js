@@ -6,12 +6,16 @@
  */
 
 class CArray {
-    constructor(numElements) {
+    constructor(numElements, isOrder) {
         this.dataStore = new Array(numElements);
         this.pos = 0;
         this.numElements = numElements;
 
         this.setData();
+
+        if(isOrder){
+            this.dataStore = this.dataStore.sort();
+        }
     }
 
     setData() {
@@ -307,13 +311,47 @@ class CArray {
      * todo：桶排序
      */
 
-     
-     
-     /**
-     * todo：二分查找算法
-     */
-    binSearch(_array, obj){
-        //todo
+
+
+    /**
+    * 二分查找有序数组
+    * 
+    * 1、将数组的第一个位置设置为下边界(0)。
+    * 2、将数组最后一个元素所在的位置设置为上边界(数组的长度减 1)。
+    * 3、若下边界等于或小于上边界，则做如下操作。
+        * a. 将中点设置为(上边界加上下边界)除以 2。
+        * b. 如果中点的元素小于查询的值，则将下边界设置为中点元素所在下标加 1。 
+        * c. 如果中点的元素大于查询的值，则将上边界设置为中点元素所在下标减 1。 
+        * d. 否则中点元素即为要查找的数据，可以进行返回。
+    */
+    binarySearch(target, _array) {
+        _array = _array ? _array : this.dataStore.sort();
+        console.time('binarySearch');
+
+        let start = 0;
+        let end = _array.length - 1;
+        let pos = -1;
+
+        //若下边界等于或小于上边界，继续缩减范围查找
+        while (start <= end) {
+            //重设中轴点
+            let mid = parseInt(start + (end - start) / 2);
+
+            if (target == _array[mid]) {
+                //找到该元素
+                pos = mid;
+            } else if (target > _array[mid]) {
+                //继续缩减范围
+                start = mid + 1;
+            } else {
+                //继续缩减范围
+                end = mid - 1;
+            }
+        }
+
+        console.timeEnd('binarySearch');
+
+        return pos;
     }
-     
+
 }
