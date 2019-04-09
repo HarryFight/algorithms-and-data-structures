@@ -1,5 +1,8 @@
 /**
  * 数组生成测试类
+ * 
+ * 资料：
+ * https://www.cnblogs.com/liyongshuai/p/7197962.html
  */
 
 class CArray {
@@ -97,7 +100,7 @@ class CArray {
                 }
             }
 
-            if (minIndex == i) return;
+            if (minIndex == i) break;
             //起始位和最小下标交换
             let _temp = _array[minIndex];
             _array[minIndex] = _array[i];
@@ -139,6 +142,178 @@ class CArray {
         }
 
         console.timeEnd('insertSort');
+
         return _array;
     }
+
+    /**
+     * 希尔排序
+     * 先对数组元素进行分组，进行插入排序，然后减小间隔，继续进行插入排序。
+     * 
+     * 平均O(n*logn)  最好O(n*log2n)  
+     */
+    shellSort(_array) {
+        _array = _array ? _array : this.dataStore.concat([]);
+
+        console.time('shellSort');
+
+        //取数组长度一半为初始间隔，每轮循坏后间隔减半，直到为1
+        for (let gap = Math.floor(_array.length / 2); gap > 0; gap = Math.floor(gap / 2)) {
+
+            console.log('gap:' + gap, _array)
+            //这里循环长度为数组length，是因为这里实际是对每个分组合并进行插入排序
+            for (let i = gap; i < _array.length; i++) {
+                //用于插入比较的值
+                let insertItem = _array[i];
+                // console.log(i,insertItem,_array)
+                //排序区比较数的下标（从最后一个开始）
+                let sortIndex = i - gap;
+
+                //当插值 比 比较数小，则把数往后移动（当sortIndex为-1，表示已经比较完了，把插值放入第一个）
+                while (sortIndex >= 0 && _array[sortIndex] > insertItem) {
+                    _array[sortIndex + gap] = _array[sortIndex];
+
+                    //继续往前比较
+                    sortIndex = sortIndex - gap;
+                }
+
+                //放入插值到比较后的位置
+                _array[sortIndex + gap] = insertItem;
+            }
+
+        }
+
+        console.timeEnd('shellSort');
+        return _array;
+    }
+
+    /**
+     * 归并排序
+     * 将数组自顶向下分成小组，小组之间两两按序合并，最后得到大的顺序数组
+     * 
+     * 平均O(n*logn) 最好O(n*logn)  最坏O(n*logn)
+     */
+    mergeSort(_array) {
+        _array = _array ? _array : this.dataStore.concat([]);
+
+        console.time('mergeSort');
+        _array = _sort(_array);
+        console.timeEnd('mergeSort');
+        return _array;
+
+
+        function _sort(array) {
+            let len = array.length;
+            //当数组元素为1时，不用进行分组，直接返回进行排序
+            if (len < 2) {
+                return array;
+            }
+
+            let middleIndex = Math.floor(len / 2);
+            let left = array.slice(0, middleIndex);
+            let right = array.slice(middleIndex);
+
+            //递归分组排序处理
+            let _left = _sort(left);
+            let _right = _sort(right);
+
+            //对两组数组进行顺序合并
+            return merge(_left, _right);
+        }
+
+
+        function merge(left, right) {
+            let result = [];
+
+            //当子数组都不为空时，根据子数组第一个元素大小决定放入result顺序
+            while (left.length && right.length) {
+                if (left[0] > right[0]) {
+                    result.push(right.shift())
+                } else {
+                    result.push(left.shift())
+                }
+            }
+
+            //left || right有一个已经为空数组了
+            if (left.length) {
+                result = result.concat(left)
+            } else if (right.length) {
+                result = result.concat(right)
+            }
+
+            return result;
+        }
+    }
+
+
+    /**
+     * 快速排序
+     * 1、选择一个基准元素，将列表分隔成两个子序列;
+     * 2、对列表重新排序，将所有小于基准值的元素放在基准值的前面，所有大于基准值的元素放在基准值的后面;
+     * 3、分别对较小元素的子序列和较大元素的子序列重复步骤 1 和 2。
+     * 
+     * 平均O(n*logn) 最好O(n*logn)  最坏O(n^2)
+     */
+    quickSort(_array) {
+        _array = _array ? _array : this.dataStore.concat([]);
+
+        console.time('quickSort');
+        _array = _sort(_array);
+        console.timeEnd('quickSort');
+
+        return _array;
+
+        function _sort(_arr) {
+            if (_arr.length < 2) return _arr;
+
+            //中间位置
+            var pivotIndex = Math.floor(_arr.length / 2);
+            //基准值
+            var pivot = _arr.splice(pivotIndex, 1)[0];
+            // console.log(pivot)
+            var left = [];
+            var right = [];
+
+            for (var i = 0; i < _arr.length; i++) {
+                //小于中间值的放在left，大于放right
+                if (_arr[i] < pivot) {
+                    left.push(_arr[i]);
+                } else {
+                    right.push(_arr[i]);
+                }
+            }
+
+            //对子序列进行递归
+            let _left = _sort(left);
+            let _right = _sort(right);
+
+            //将排序好的数组组合返回
+            return _left.concat([pivot], _right);
+        }
+    };
+
+
+    /**
+     * todo: 堆排序
+     */
+
+
+    /**
+     * todo：计数排序
+     */
+
+
+    /**
+     * todo：桶排序
+     */
+
+     
+     
+     /**
+     * todo：二分查找算法
+     */
+    binSearch(_array, obj){
+        //todo
+    }
+     
 }
