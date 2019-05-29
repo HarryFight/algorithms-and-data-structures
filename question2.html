@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>头条面试题</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+    <script>
+        //请实现如下函数，
+        // 可以批量请求数据,所有的 url 地址在 urls 参数中，同时可以通过 max 参数控制请求的并发数，当所有请求结束之后，需要执行 callback 回调函数.
+        // 发送请求的函数可以直接使用 fetch 即可
+
+        function fetch(url) {
+            return new Promise((resolve) => {
+                console.log(`fetch ${url} start`)
+                setTimeout(() => {
+                    console.log(`fetch ${url} end`)
+                    resolve()
+                }, 2000 * Math.random())
+            })
+        }
+
+        let urls = [
+            'url1',
+            'url2',
+            'url3',
+            'url4',
+            'url5',
+            'url6',
+            'url7',
+            'url8',
+            'url9',
+            'url10',
+        ];
+
+        //answer:
+
+        //todo: 这里还有问题，还要细看
+        function sendRequest(urls, max, callback) {
+            let _urls = [...urls]; //copy一下数组
+            let current = 0;
+            let fetchArr = [];
+
+            function doFetch() {
+                //当下标等于数组长度，表示所有请求已经处理完
+                if (current == urls.length) {
+                    callback && callback()
+                    return;
+                }
+
+                //取出一个url包裹为promise请求对象
+                let one = fetch(urls[current]);
+                let result = one.then(() => {
+                    //请求返回后，从请求数组中删除，表示已完成
+                    fetchArr.splice(fetchArr.indexOf(one), 1)
+                })
+
+                //将url请求promise放在 请求数组中，表示正在请求中
+                fetchArr.push(one);
+
+                current++; //下标递增
+
+                if (fetchArr.length < max) {
+                    //当并发数还未满时
+                    return doFetch();
+                } else {
+
+                    let p = Promise.race(fetchArr)
+                    //最大并发时，一旦有请求完成，则触发race
+                    p.then(()=>{
+                        doFetch()
+                    });
+                }
+            }
+
+            doFetch();
+        }
+
+        sendRequest(urls, 3, () => {
+            console.log(`all request done`)
+        })
+
+         //answer2:
+        function sendRequest2(urls, max, callback) {
+            let urlRequstArr = [];
+            let times = Math.ceil(urls.length / max);
+            let currentIndex = 0;
+
+            //对数组请求按最大并发数分组
+            for (let i = 0; i < times; i++) {
+                urlRequstArr[i] = urls.slice(i * max, (i + 1) * max);
+            }
+
+            function send() {
+                
+                if (urlRequstArr[currentIndex]) {
+                    //包裹为promise模式
+                    let fetchArr = urlRequstArr[currentIndex].map((url)=>{
+                        return fetch(url);
+                    })
+                    Promise.all(fetchArr).then(() => {
+                        
+                        //循环执行
+                        currentIndex++;
+                        send();
+                    })
+                }else{
+                    callback && callback();
+                }
+            }
+            send();
+        }
+
+
+
+    </script>
+</body>
+
+</html>

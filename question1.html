@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>百词斩笔试题</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+    <script>
+        //给定由普通英文字母组成的非空字符串s1，要求将连续出现的字符压缩成字符和该字符连续出现的次数，并返回新的字符串s2。s1字符串的长度不超过100。
+
+        // 输入描述: 
+        // 全部由普通英文字符组成的长度不超过100的字符串 。
+
+        // 输出描述: 
+        // 由英文字符和数字组成的字符串，其中数字表示它前面的字符在输入字符串中连续出现的次数。
+
+        // 示例
+
+        // 输入：
+        // aabccccaaa 
+
+        // 输出：
+        // a2bc4a3 
+
+
+
+        let testStr = 'aabccccaaa'
+
+
+        function formateStr1(str) {
+            let _count = 0;
+            let _char = '';
+            let _newStrArr = [];
+
+            let strArr = str.split('');
+            strArr.push(''); //占位用
+            strArr.forEach((strChar) => {
+                if (_char === strChar) {
+                    _count++
+                } else {
+                    if (_count) {
+                        _newStrArr.push(_char);
+                        _newStrArr.push(_count);
+                    }
+
+                    _char = strChar
+                    _count = 1;
+                }
+            })
+
+            return _newStrArr.join('')
+        }
+
+        function formateStr2(str) {
+            let _char, _reg, _result, _newStrArr = [];
+
+            while (str.length > 0) {
+                _char = str[0]
+                _reg = new RegExp(_char + '+');
+                _result = str.match(_reg);
+
+                _newStrArr.push(_char);
+                _newStrArr.push(_result[0].length);
+                str = str.replace(_reg, '')
+            }
+
+            return _newStrArr.join('')
+        }
+
+        console.log(formateStr1(testStr))
+        console.log(formateStr2(testStr))
+
+    </script>
+</body>
+
+</html>
