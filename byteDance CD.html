@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>头条成都面试</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+    <script>
+       // 实现如下类
+       /*
+
+class Observer {
+  constructor(data) {
+    // your code
+  }
+
+  $on() {
+    // your code
+  }
+  $emit() {
+    // your code
+  }
+}
+
+const w = new Observer({a: 1});
+w.$on('a', (v) => {
+  console.log('first ', v)
+})
+
+w.$on('a', (v) => {
+  console.log('second ', v)
+})
+
+w.a = 2; // console: first 2  second 2
+
+w.$emit('a', 3); // console: first 3  second 3
+w.a === 3; // true
+
+
+       */
+       
+
+
+
+
+       //解答
+
+
+class Observer {
+    constructor(data){
+        this.eventMap = {};
+        this.observe(data);
+        this.$data = data;
+    }
+    
+    observe(data){
+        if(!data || typeof data != 'object'){
+            return; 
+        }
+        
+        data.forEach((key)=>{
+            this.defindReactive(data,key,data[key]);
+            this.observe(data[key]);
+        })
+    }
+    
+    defindReactive(object,key,value){
+        Obeject.defindProperty(object,key,{
+            get(){
+                this.eventMap[key] = [];
+                return value;
+            },
+            set(newValue){
+                if(newValue != value){
+                    let cbList = this.evnetMap[key];
+                    cbList.forEach((cb)=>{
+                        cb.bind(this);
+                    })
+                    
+                    this.observe(value)
+                }
+            }
+        })
+        
+         Obeject.defindProperty(this, key,{
+            get(){
+              return this.$data[key]
+            },
+            set(newValue){
+               this.$data[key] = newValue;
+                return newValue
+            }
+        })
+    }
+    
+    $on(key,fn){
+       this.eventMap[key].push(fn);
+    }
+    
+    $emit(key,val){
+        this.data[key] = val
+    }
+}
+
+
+    </script>
+</body>
+
+</html>

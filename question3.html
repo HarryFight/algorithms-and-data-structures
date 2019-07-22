@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>一堆笔试题练习</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+
+    <script>
+       //1、函数柯里化
+
+        //柯里化通用式
+        function currying (fn){
+            //取第一个参数
+            var a = [].slice.call(arguments, 1)
+            // debugger;
+
+            return function(){
+                //聚合传入的所有参数
+                var _args = a.concat([].slice.call(arguments))
+
+                return fn.apply(null, _args)
+            }
+        }
+
+        var sum = currying(function(){
+            var args = [].slice.call(arguments);
+           return args.reduce((acc,current)=>{
+                return acc+current
+           })
+        })
+
+        // console.log(sum(20, 10));  
+        // console.log(sum(10, 5));   
+
+
+
+
+/*
+        实现一个add方法，使计算结果能够满足如下预期：
+        add(1)(2)(3) = 6
+        add(1, 2, 3)(4) = 10
+        add(1)(2)(3)(4)(5) = 15
+        */
+
+        function add() {
+            // 第一次执行时，定义一个数组专门用来存储所有的参数
+            var _args = [].slice.call(arguments);
+
+            // 在内部声明一个函数，利用闭包的特性保存_args并收集所有的参数值
+            var adder = function () {
+                var _adder = function() {
+                    [].push.apply(_args, [].slice.call(arguments));
+                    return _adder;
+                };
+
+                // 利用隐式转换的特性，当最后执行时隐式转换，并计算最终的值返回
+                _adder.toString = function () {
+                    return _args.reduce(function (a, b) {
+                        return a + b;
+                    });
+                }
+
+                return _adder;
+            }
+            return adder.apply(null, [].slice.call(arguments));
+        }
+
+        // 输出结果，可自由组合的参数
+        // console.log(add(1, 2, 3, 4, 5));  // 15
+        // console.log(add(1, 2, 3, 4)(5));  // 15
+        // console.log(add(1)(2)(3)(4)(5));  // 15
+
+
+
+        //2、实现深拷贝
+        function isArray(arr){
+            return Object.prototype.toString.call(arr) == '[object Arrary]'
+        }
+
+        //方法一： 
+        //缺点：无法处理循环引用的场景
+        function deepClone1(obj){
+            return JSON.parse(JSON.stringify(obj))
+        }
+
+        //方法二：
+        function deepClone2(obj){
+            if(typeof obj != 'object' && typeof obj != 'function'){
+                return obj  //原始数据类型直接返回
+            }
+
+            let newObj = isArray(obj) ? [] : {};
+            for(key in obj){
+
+                //复制本身自己的属性
+                if(obj.hasOwnProperty(key)){
+                    //当属性为基本属性时，执行赋值。  对象属性则继续递归
+                    newObj[key] = typeof obj[key] === 'object' ? deepClone2(obj) : obj[key]
+                }
+            } 
+
+            return newObj
+        }
+
+
+    </script>
+</body>
+
+</html>
